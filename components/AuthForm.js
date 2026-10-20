@@ -89,10 +89,10 @@ export default function AuthForm({ admin = false }) {
           )}
           {options.preview && (
             <form onSubmit={(e) => submit(e, true)} className="panel">
-              <p className="eyebrow">LOCAL TEST BUILD</p>
+              <p className="eyebrow">TEST BUILD</p>
               <p>
-                Use the shared preview customer to test shopping and orders.
-                This is not a Google account.
+                Use a test customer account to try shopping and orders.
+                Saved data may reset. Do not enter sensitive personal information.
               </p>
               <button className="button secondary" disabled={busy}>
                 Continue as preview customer

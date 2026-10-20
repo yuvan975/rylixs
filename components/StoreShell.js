@@ -194,7 +194,7 @@ export default function StoreShell({ children }) {
         <>
           <div className="announcement">
             {catalog.preview
-              ? "LOCAL PREVIEW · SAMPLE PRODUCTS · NO PAYMENT COLLECTED"
+              ? "TEST APP · DATA MAY RESET · NO PAYMENT COLLECTED"
               : "RYLIXS / WEAR YOUR STYLE"}{" "}
             <span>Thoughtfully selected. Effortlessly worn.</span>
           </div>

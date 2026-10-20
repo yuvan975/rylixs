@@ -139,9 +139,9 @@ async function handler(req, { params }) {
         google: !!(
           process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
         ),
-        preview:
+        preview: process.env.RYLIXS_PUBLIC_DEMO === "true" || (
           process.env.RYLIXS_LOCAL_PREVIEW === "true" &&
-          process.env.RYLIXS_INSECURE_LOCAL_HTTP === "true",
+          process.env.RYLIXS_INSECURE_LOCAL_HTTP === "true"),
       });
 
     if (route === "auth/preview" && method === "POST")
@@ -197,7 +197,7 @@ async function handler(req, { params }) {
 
         categories: store.categories(),
 
-        preview: process.env.RYLIXS_LOCAL_PREVIEW === "true",
+        preview: process.env.RYLIXS_LOCAL_PREVIEW === "true" || process.env.RYLIXS_PUBLIC_DEMO === "true",
         settings: store.settings(),
       });
 
