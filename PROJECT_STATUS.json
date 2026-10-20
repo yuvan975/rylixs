@@ -1,0 +1,38 @@
+{
+  "project": "RYLIXS",
+  "developmentStatus": "in_progress_screen_by_screen_review",
+  "businessLaunchStatus": "awaiting_owner_configuration",
+  "backendTestsPassed": 21,
+  "apiChecksPassed": 48,
+  "lint": "passed",
+  "localUrl": "http://127.0.0.1:3100",
+  "requiredBusinessInputs": [
+    "real catalogue and stock",
+    "business WhatsApp number",
+    "production HTTPS hosting"
+  ],
+  "report": "IMPLEMENTATION_REPORT.md",
+  "productionBuild": "passed",
+  "responsiveWidths": [
+    360,
+    390,
+    414,
+    768,
+    1024,
+    1280,
+    1440,
+    1920
+  ],
+  "currentScreen": "cart",
+  "apkDelivery": "local_preview_apk_built_and_signature_verified",
+  "splashScreenStatus": "completed_and_opened_in_mobile_preview",
+  "splashPreviewUrl": "http://127.0.0.1:3100/splash",
+  "homeScreenStatus": "completed_with_sample_images_admin_editable_banners",
+  "homePreviewUrl": "http://127.0.0.1:3100/",
+  "ordersScreenStatus": "completed_with_sample_preview",
+  "ordersPreviewUrl": "http://127.0.0.1:3100/orders?demo=1",
+  "filterScreenStatus": "completed_replaced_old_panel_and_verified",
+  "shopScreenStatus": "banner_added_and_toolbar_simplified",
+  "cartScreenStatus": "completed_desktop_and_mobile_verified",
+  "bannerManagementStatus": "image_upload_replace_delete_for_all_placements; no_storefront_text_overlay; responsive_uncropped_images; build_and_lint_passed"
+}

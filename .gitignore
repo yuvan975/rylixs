@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+.DS_Store
+*.log
+data/
+public/uploads/
+.env*
+!.env.example
+node_modules/
+.next/
+verification/
+
+android/build/
+dist/
