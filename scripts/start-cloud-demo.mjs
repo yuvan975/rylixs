@@ -13,11 +13,16 @@ if(!s.products(true).length){
  s.transaction(()=>{
   for(const row of seed.categories)s.saveCategory(row);
   for(const row of seed.products)s.db.prepare('INSERT INTO products VALUES(?,?,?)').run(row.id,row.slug,JSON.stringify(row));
-  for(const {kind,...row} of seed.resources)c.saveResource(kind,{...row,id:undefined});
+  for(const {kind,...row} of seed.resources){
+   // Deleted categories must not turn an old category coupon into a storewide offer.
+   if(row.categoryId && !seed.categories.some(category=>category.id===row.categoryId))continue;
+   c.saveResource(kind,{...row,id:undefined});
+  }
   s.saveSettings(seed.settings);
  });
 }
 s.db.close();
+if(process.argv.includes("--seed-only")){console.log("Cloud testing seed validated.");process.exit(0);}
 const child=spawn(process.execPath,['node_modules/next/dist/bin/next','start','--hostname','0.0.0.0','--port',process.env.PORT||'10000'],{stdio:'inherit',env:process.env});
 for(const signal of ['SIGTERM','SIGINT'])process.on(signal,()=>child.kill(signal));
 child.on('exit',code=>process.exit(code??1));
