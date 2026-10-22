@@ -11,8 +11,11 @@ $platform=Join-Path $AndroidSdk 'platforms\android-35\android.jar'
 $javaBin=Split-Path (Get-Command javac).Source
 function Check {if($LASTEXITCODE -ne 0){throw "Android build command failed: $LASTEXITCODE"}}
 New-Item -ItemType Directory -Force android/build/classes,android/build/dex,dist | Out-Null
-('package com.rylixs.preview; final class BuildConfig { static final String SERVER_URL = "' + $ServerUrl + '"; }') | Set-Content -Encoding utf8 android/build/BuildConfig.java
-& "$tools\aapt.exe" package -f -M android/AndroidManifest.xml -S android/res -I $platform -F android/build/resources.ap_ -J android/build
+[System.IO.File]::WriteAllText((Join-Path $root 'android/build/BuildConfig.java'),('package com.rylixs.preview; final class BuildConfig { static final String SERVER_URL = "' + $ServerUrl + '"; }'),(New-Object System.Text.UTF8Encoding($false)))
+$manifest=Get-Content android/AndroidManifest.xml -Raw
+if($serverUri.Scheme -eq 'https') { $manifest=$manifest.Replace('android:usesCleartextTraffic="true"','android:usesCleartextTraffic="false"').Replace('android:versionCode="1"','android:versionCode="2"').Replace('android:versionName="1.0-preview"','android:versionName="1.1-test"').Replace('android:label="RYLIXS Preview"','android:label="RYLIXS"') }
+[System.IO.File]::WriteAllText((Join-Path $root 'android/build/AndroidManifest.xml'),$manifest,(New-Object System.Text.UTF8Encoding($false)))
+& "$tools\aapt.exe" package -f -M android/build/AndroidManifest.xml -S android/res -I $platform -F android/build/resources.ap_ -J android/build
 Check
 & "$javaBin\javac.exe" -encoding UTF-8 -source 8 -target 8 -Xlint:-options -classpath $platform -d android/build/classes android/src/com/rylixs/preview/MainActivity.java android/build/BuildConfig.java
 Check
