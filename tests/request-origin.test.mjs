@@ -11,6 +11,11 @@ const req = (
 });
 test("same origin accepted", () =>
   assert.equal(allowed(req("http://localhost:3100")), true));
+test("explicit website and APK origins share the service without permitting lookalikes", () => {
+  const config = { siteUrl: "https://rylixs.onrender.com", additionalOrigins: ["https://rylixs.com", "https://www.rylixs.com"] };
+  for (const origin of [config.siteUrl, ...config.additionalOrigins]) assert.equal(allowed(req(origin), config), true);
+  for (const origin of ["https://rylixs.com.evil.test", "http://rylixs.com", "https://untrusted.example"]) assert.equal(allowed(req(origin), config), false);
+});
 test("explicit local HTTP mode accepts exact loopback aliases", () => {
   for (const host of ["127.0.0.1", "localhost", "[::1]"])
     assert.equal(

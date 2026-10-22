@@ -3,6 +3,8 @@ import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 if(process.env.RYLIXS_PUBLIC_DEMO !== 'true') throw new Error('This launcher is for the resettable testing service only.');
 if(!process.env.RYLIXS_SITE_URL && process.env.RENDER_EXTERNAL_URL) process.env.RYLIXS_SITE_URL=process.env.RENDER_EXTERNAL_URL;
+// Both the installed app and the custom-domain website use this same service.
+if(process.env.RENDER_EXTERNAL_URL === 'https://rylixs.onrender.com' && !process.env.RYLIXS_ADDITIONAL_ORIGINS) process.env.RYLIXS_ADDITIONAL_ORIGINS='https://rylixs.com,https://www.rylixs.com';
 const s=await import('../lib/store.mjs');
 const c=await import('../lib/commerce.mjs');
 const email=process.env.RYLIXS_ADMIN_EMAIL,password=process.env.RYLIXS_ADMIN_PASSWORD;

@@ -74,6 +74,7 @@ async function handler(req, { params }) {
       if (
         !isAllowedMutationOrigin(req, {
           siteUrl: process.env.RYLIXS_SITE_URL,
+          additionalOrigins: (process.env.RYLIXS_ADDITIONAL_ORIGINS || "").split(",").map(value => value.trim()).filter(Boolean),
 
           localHttp: process.env.RYLIXS_INSECURE_LOCAL_HTTP === "true",
         })
