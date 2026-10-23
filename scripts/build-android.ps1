@@ -1,5 +1,6 @@
-param([string]$AndroidSdk='C:\Android',[string]$ServerUrl='http://127.0.0.1:3100')
+param([string]$AndroidSdk='C:\Android',[string]$ServerUrl='http://127.0.0.1:3100',[int]$VersionCode=3,[string]$VersionName='1.2.0')
 $ErrorActionPreference='Stop'
+if($VersionCode -lt 1 -or $VersionName -notmatch '^[0-9]+\.[0-9]+\.[0-9]+$'){throw 'Use a positive version code and a numeric semantic version.'}
 $serverUri=[Uri]$ServerUrl
 if(-not $serverUri.IsAbsoluteUri -or ($serverUri.Scheme -ne 'https' -and $ServerUrl -ne 'http://127.0.0.1:3100')) { throw 'Use an HTTPS app origin or the local preview address.' }
 if($serverUri.UserInfo -or $serverUri.Query -or $serverUri.Fragment -or $serverUri.AbsolutePath -ne '/') { throw 'Use only the app origin.' }
@@ -13,7 +14,8 @@ function Check {if($LASTEXITCODE -ne 0){throw "Android build command failed: $LA
 New-Item -ItemType Directory -Force android/build/classes,android/build/dex,dist | Out-Null
 [System.IO.File]::WriteAllText((Join-Path $root 'android/build/BuildConfig.java'),('package com.rylixs.preview; final class BuildConfig { static final String SERVER_URL = "' + $ServerUrl + '"; }'),(New-Object System.Text.UTF8Encoding($false)))
 $manifest=Get-Content android/AndroidManifest.xml -Raw
-if($serverUri.Scheme -eq 'https') { $manifest=$manifest.Replace('android:usesCleartextTraffic="true"','android:usesCleartextTraffic="false"').Replace('android:versionCode="1"','android:versionCode="2"').Replace('android:versionName="1.0-preview"','android:versionName="1.1-test"').Replace('android:label="RYLIXS Preview"','android:label="RYLIXS"') }
+if($serverUri.Scheme -eq 'https') { $manifest=$manifest.Replace('android:usesCleartextTraffic="true"','android:usesCleartextTraffic="false"').Replace('android:label="RYLIXS Preview"','android:label="RYLIXS"') }
+$manifest=$manifest.Replace('android:versionCode="1"',('android:versionCode="'+$VersionCode+'"')).Replace('android:versionName="1.0-preview"',('android:versionName="'+$VersionName+'"'))
 [System.IO.File]::WriteAllText((Join-Path $root 'android/build/AndroidManifest.xml'),$manifest,(New-Object System.Text.UTF8Encoding($false)))
 & "$tools\aapt.exe" package -f -M android/build/AndroidManifest.xml -S android/res -I $platform -F android/build/resources.ap_ -J android/build
 Check

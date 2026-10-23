@@ -6,11 +6,12 @@ $localUrl='http://127.0.0.1:3100'
 function Test-RylixsServer {
     try { $health=Invoke-RestMethod -Uri "http://127.0.0.1:3100/api/health" -TimeoutSec 2; return $health.app -eq 'RYLIXS' -and $health.status -eq 'ok' } catch { return $false }
 }
+if(Test-Path -LiteralPath '.next-local/BUILD_ID'){$env:RYLIXS_BUILD_DIR='.next-local'}
 if (-not (Test-RylixsServer)) {
-    if (-not (Test-Path -LiteralPath '.next/BUILD_ID')) { throw 'Build is missing. Run pnpm install and pnpm build first.' }
+    if (-not (Test-Path -LiteralPath '.next/BUILD_ID') -and -not (Test-Path -LiteralPath '.next-local/BUILD_ID')) { throw 'Build is missing. Run pnpm install and pnpm build first.' }
     $bundledNode=Join-Path $env:USERPROFILE '.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
     $nodePath=if(Test-Path -LiteralPath $bundledNode){$bundledNode}else{(Get-Command node -ErrorAction Stop).Source}
-    $nodeMajor=[int]((& $nodePath -p 'process.versions.node.split(".")[0]').Trim())
+    $nodeMajor=[int]((& $nodePath --version).Trim().TrimStart("v").Split(".")[0])
     if ($nodeMajor -lt 22) { throw 'Install Node.js 24 or later to run RYLIXS.' }
     $env:RYLIXS_INSECURE_LOCAL_HTTP='true'
     $env:RYLIXS_LOCAL_PREVIEW='true'

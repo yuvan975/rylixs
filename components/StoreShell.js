@@ -12,7 +12,9 @@ import {
   Menu,
   X,
   ArrowUpRight,
+  Package,
 } from "lucide-react";
+import PageBanner from "./PageBanner";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 const Data = createContext(null);
@@ -181,96 +183,23 @@ export default function StoreShell({ children }) {
     ["/", "Home", Home],
     ["/shop", "Shop", Search],
     ["/wishlist", "Wishlist", Heart],
-    ["/cart", "Cart", ShoppingBag],
-    ["/account", "Account", User],
+    ["/orders", "My Orders", Package],
+    ["/account", "Profile", User],
   ];
   return (
     <Data.Provider
       value={{ ...catalog, loading, error, user, setUser, refresh }}
     >
-      {admin || pathname === "/splash" || pathname === "/" || pathname === "/orders" || pathname === "/cart" ? (
-        children
-      ) : (
-        <>
-          <div className="announcement">
-            {catalog.preview
-              ? "TEST APP · DATA MAY RESET · NO PAYMENT COLLECTED"
-              : "RYLIXS / WEAR YOUR STYLE"}{" "}
-            <span>Thoughtfully selected. Effortlessly worn.</span>
-          </div>
-          <header className="store-header">
-            <Link className="wordmark" href="/">
-              RYLIXS<span>WEAR YOUR STYLE</span>
-            </Link>
-            <nav className={menu ? "desktop-nav is-open" : "desktop-nav"}>
-              <Link href="/">Home</Link>
-              <Link href="/shop">Shop</Link>
-              <Link href="/#categories">Categories</Link>
-              <Link href="/shop?new=1">New arrivals</Link>
-              <Link href="/#collections">Collections</Link>
-            </nav>
-            <div className="header-actions">
-              <Link aria-label="Notifications" href="/notifications">
-                <Bell />
-              </Link>
-              <Link aria-label="Search" href="/shop">
-                <Search />
-              </Link>
-              <Link aria-label="Wishlist" href="/wishlist">
-                <Heart />
-                <sup>{ids.length || ""}</sup>
-              </Link>
-              <Link aria-label="Account" href="/account">
-                <User />
-              </Link>
-              <Link aria-label="Cart" href="/cart">
-                <ShoppingBag />
-                <sup>{count || ""}</sup>
-              </Link>
-              <button
-                className="menu-toggle"
-                aria-label="Toggle menu"
-                aria-expanded={menu}
-                onClick={() => setMenu(!menu)}
-              >
-                {menu ? <X /> : <Menu />}
-              </button>
-            </div>
-          </header>
-          <main>{children}</main>
-          <footer className="store-footer">
-            <div>
-              <Link href="/" className="wordmark">
-                RYLIXS
-              </Link>
-              <p>A wardrobe with a point of view.</p>
-            </div>
-            <nav>
-              <Link href="/admin">Store management</Link>
-              <Link href="/shop">Shop</Link>
-              <Link href="/about">Our story</Link>
-              <Link href="/contact">Contact</Link>
-              <Link href="/orders">Your orders</Link>
-            </nav>
-            <p>© {new Date().getFullYear()} RYLIXS. Wear your style.</p>
-          </footer>
-          <nav className="mobile-bottom" aria-label="Mobile navigation">
-            {nav.map(([href, label, Icon]) => (
-              <Link
-                key={href}
-                href={href}
-                aria-current={pathname === href ? "page" : undefined}
-              >
-                <Icon size={19} />
-                <span>
-                  {label}
-                  {label === "Cart" && count > 0 ? " (" + count + ")" : ""}
-                </span>
-              </Link>
-            ))}
-          </nav>
-        </>
-      )}
+      {admin || pathname === "/splash" ? children : <div className="storefront">
+        <header className="unified-header">
+          <Link className="unified-brand" href="/"><img src="/logo-icon.png" alt=""/><span>RYLIXS<small>Wear Your Style</small></span></Link>
+          <div className="unified-actions"><Link href="/notifications" aria-label="Notifications"><Bell/></Link><Link href="/cart" aria-label={`Shopping bag, ${count} items`}><ShoppingBag/>{count>0&&<sup>{count}</sup>}</Link><button aria-label={menu?"Close menu":"Open menu"} aria-expanded={menu} aria-controls="store-menu" onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button></div>
+        </header>
+        {menu && <nav id="store-menu" className="store-menu" aria-label="All pages">{[["/","Home"],["/shop","Shop"],["/wishlist","Wishlist"],["/orders","My Orders"],["/account","Profile"],["/about","Our Story"],["/lookbook","Lookbook"],["/offers","Offers"],["/contact","Contact"],["/notifications","Notifications"],["/admin/login","Store Management"]].map(([url,label])=><Link key={url} href={url} onClick={()=>setMenu(false)}>{label}<ArrowUpRight size={18}/></Link>)}</nav>}
+        <main>{({"/orders":"Orders","/wishlist":"Wishlist","/checkout":"Checkout","/offers":"Offers"}[pathname]) && <PageBanner placement={{"/orders":"Orders","/wishlist":"Wishlist","/checkout":"Checkout","/offers":"Offers"}[pathname]}/>} {children}</main>
+        <nav className="unified-bottom" aria-label="Main navigation">{nav.map(([href,label,Icon])=><Link key={href} href={href} aria-current={(href==="/"?pathname==="/":pathname.startsWith(href))?"page":undefined}><Icon size={23}/><span>{label}</span></Link>)}</nav>
+      </div>}
+
     </Data.Provider>
   );
 }

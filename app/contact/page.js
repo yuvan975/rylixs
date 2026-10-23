@@ -1,37 +1,5 @@
 "use client";
-import { useStore } from "@/components/StoreShell";
-export default function Contact() {
-  const { settings: s } = useStore();
-  return (
-    <section className="store-section narrow">
-      <p className="eyebrow">LET’S TALK</p>
-      <h1>A personal conversation.</h1>
-      <p>For product questions, sizing and order enquiries, contact RYLIXS.</p>
-      {s.whatsappNumber ? (
-        <a
-          className="button"
-          target="_blank"
-          rel="noreferrer"
-          href={"https://wa.me/" + s.whatsappNumber}
-        >
-          Chat on WhatsApp ↗
-        </a>
-      ) : (
-        <p>Contact details will be available soon.</p>
-      )}
-      {s.contactEmail && (
-        <p>
-          <a href={"mailto:" + s.contactEmail}>{s.contactEmail}</a>
-        </p>
-      )}
-      {s.businessAddress && <p>{s.businessAddress}</p>}
-      {s.instagram && (
-        <p>
-          <a href={s.instagram} target="_blank" rel="noreferrer">
-            Find us on Instagram ↗
-          </a>
-        </p>
-      )}
-    </section>
-  );
-}
+import {MessageCircle,ArrowUpRight,Shirt,Package,Mail} from "lucide-react";
+import {useStore} from "@/components/StoreShell";
+import PageBanner from "@/components/PageBanner";
+export default function Contact(){const {settings:s}=useStore();return <section className="store-section contact-page"><PageBanner placement="Contact"/><span className="contact-symbol"><MessageCircle size={38}/></span><p className="eyebrow">LET’S TALK, PERSON TO PERSON</p><h1>{s.contactTitle||"A personal conversation."}</h1><p className="intro">{s.contactText||"Questions about your fit, a favourite piece or your order? Chat directly with the RYLIXS team on WhatsApp."}</p>{s.whatsappNumber?<a className="button whatsapp-button" href={`https://wa.me/${s.whatsappNumber}?text=${encodeURIComponent("Hi RYLIXS! I’d like some help with my shopping.")}`} target="_blank" rel="noreferrer"><MessageCircle size={20}/>Chat on WhatsApp<ArrowUpRight size={18}/></a>:<p className="panel">Our WhatsApp contact will be available soon.</p>}<div className="contact-topics"><div><Shirt/><h2>Find your fit</h2><p>Ask about sizes, colours and product details.</p></div><div><Package/><h2>Order help</h2><p>Share your order number so we can help you with its progress.</p></div></div>{s.contactEmail&&<a href={`mailto:${s.contactEmail}`}><Mail size={18}/>{s.contactEmail}</a>}{s.businessAddress&&<p>{s.businessAddress}</p>}</section>;}

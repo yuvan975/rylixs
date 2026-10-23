@@ -9,5 +9,18 @@ try{for(let i=0;i<60;i++){try{const r=await fetch(base+'/api/health');if(r.ok)br
  for(const status of ['Confirmed','Processing','Packed','Shipped','Out for Delivery','Delivered'])await request('admin/orders/'+result.order.id,'PUT',{status},ac);await request('admin/orders/'+result.order.id,'PUT',{status:'Delivered',paymentStatus:'Paid',refundStatus:'Not requested',estimatedDelivery:'2026-10-20'},ac);const review=(await request('reviews','POST',{productId:p.id,rating:5,description:'QA verified review'},customer,201)).data.review;await request('admin/resources/reviews','POST',{...review,status:'Approved',reply:'Thank you'},ac);assert.equal((await request('reviews')).data.reviews.length,1);passed++;
  const banner=(await request('admin/resources/banners','POST',{title:'QA Banner',image:'/hero.jpeg',placement:'Hero',destination:'/shop',order:0,active:true},ac)).data.resource;await request('admin/resources/banners/'+banner.id,'DELETE',{},ac);await request('admin/resources/notifications','POST',{title:'QA announcement',type:'General',description:'In-app only',active:true},ac);await request('notifications','GET',null,customer);const invoice=await fetch(base+'/invoice/'+result.order.id,{headers:{Cookie:customer}});assert.equal(invoice.status,200);assert.ok((await invoice.text()).includes(result.order.id));passed++;
  const fd=new FormData();fd.append('file',new Blob([readFileSync('public/logo-icon.png')],{type:'image/png'}),'test.png');const upload=await fetch(base+'/api/admin/upload',{method:'POST',headers:{Origin:base,Cookie:ac},body:fd});assert.equal(upload.status,200);const media=(await upload.json()).url;assert.equal((await fetch(base+media)).status,200);passed+=2;
+
+ const launch=(await request('admin/resources/lookbook','POST',{title:'QA upcoming edition',image:'/hero.jpeg',launchAt:'2027-01-01T12:00',active:true},ac)).data.resource;
+ assert.ok((await request('catalog')).data.lookbook.some(x=>x.id===launch.id));passed++;
+ await request('admin/resources/lookbook','POST',{...launch,title:'Forbidden'},customer,403);
+ const photoData=new FormData();photoData.append('file',new Blob([readFileSync('public/logo-icon.png')],{type:'image/png'}),'avatar.png');
+ const denied=await fetch(base+'/api/profile/photo',{method:'POST',headers:{Origin:base},body:photoData});assert.equal(denied.status,401);passed++;
+ const photo=await fetch(base+'/api/profile/photo',{method:'POST',headers:{Origin:base,Cookie:customer},body:photoData});assert.equal(photo.status,200);const avatar=(await photo.json()).url;passed++;
+ const before=(await request('auth/me','GET',null,customer)).data.user;
+ const profile=(await request('profile','PUT',{...before,avatar,dob:'2000-01-12',gender:'Male'},customer)).data.user;
+ assert.equal(profile.avatar,avatar);assert.equal((await request('auth/me','GET',null,customer)).data.user.dob,'2000-01-12');passed+=2;
+ await request('profile','PUT',{...profile,dob:'2999-01-01'},customer,400);
+ const badFile=new FormData();badFile.append('file',new Blob(['not an image'],{type:'image/png'}),'bad.png');
+ assert.equal((await fetch(base+'/api/profile/photo',{method:'POST',headers:{Origin:base,Cookie:customer},body:badFile})).status,400);passed++;
  await request('auth/logout','POST',{},customer);await request('orders','GET',null,customer,401);console.log(passed+' HTTP integration checks passed. No WhatsApp message was opened or sent.');
 }finally{server.kill();await new Promise(r=>server.once('exit',r));rmSync(dir,{recursive:true,force:true});}

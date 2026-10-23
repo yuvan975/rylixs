@@ -192,6 +192,7 @@ async function handler(req, { params }) {
       return response({
         products: commerce.enrichedProducts(store.products()),
 
+        lookbook: commerce.resources("lookbook"),
         banners: commerce.resources("banners"),
         coupons: commerce.resources("coupons"),
         offers: commerce.resources("offers"),
@@ -204,7 +205,8 @@ async function handler(req, { params }) {
 
     if (route === "auth/me" && method === "GET") return response({ user });
 
-    if (route === "admin/upload" && method === "POST") {
+    if (["admin/upload", "profile/photo"].includes(route) && method === "POST") {
+      if (!user) store.fail("Sign in to upload your profile photo.", 401);
       if (Number(req.headers.get("content-length") || 0) > 6 * 1024 * 1024)
         store.fail("Image must be smaller than 5 MB.", 413);
 

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Photo } from "./StoreShell";
 
-const names = { Hero: "Home main banner", Offer: "Home offer banner", Category: "Home collection banner", Shop: "Shop banner", CategoryPage: "Category banner" };
+const names = { Profile: "Profile banner", Story: "Our story banner", Contact: "Contact banner", Lookbook: "Lookbook banner", Orders: "Orders banner", Wishlist: "Wishlist banner", Checkout: "Checkout banner", Offers: "Offers banner", Hero: "Home main banner", Offer: "Home offer banner", Category: "Home collection banner", Shop: "Shop banner", CategoryPage: "Category banner" };
 export default function BannerManager({ data, mutate, upload, busy, placement }) {
   const [draft, setDraft] = useState(null);
   const fixed = placement && placement !== "Home";
@@ -23,7 +23,7 @@ export default function BannerManager({ data, mutate, upload, busy, placement })
         {draft[key] && <><Photo className="banner-preview" src={draft[key]} alt="Uploaded banner preview"/>{key === "mobileImage" && <button type="button" onClick={() => setDraft({ ...draft, mobileImage: "" })}>Remove mobile photo</button>}</>}
       </div>)}
       <p className="quiet">JPEG, PNG or WebP, up to 5 MB. Use a sharp, high-resolution image. The main photo also fits phones when no mobile photo is uploaded.</p>
-      <button className="button" disabled={busy || !draft.image}>{busy ? "Uploading…" : "Save banner"}</button>
+      <label><input type="checkbox" checked={draft.active} onChange={e=>setDraft({...draft,active:e.target.checked})}/> Published</label><button className="button" disabled={busy || !draft.image}>{busy ? "Uploading…" : "Save banner"}</button>
     </form> : <div className="resource-grid">{rows.map(b => <article className="panel" key={b.id}>
       <Photo className="banner-preview" src={b.image} alt={names[b.placement] || "RYLIXS banner"}/>
       <h3>{names[b.placement]}{b.categoryId ? ` · ${data.categories.find(c => c.id === b.categoryId)?.name || b.categoryId}` : ""}</h3>

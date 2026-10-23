@@ -1,5 +1,6 @@
 import "./globals.css";
 import "./store.css";
+import "./refinement.css";
 import Pwa from "@/components/Pwa";
 import StoreShell from "@/components/StoreShell";
 import { CartProvider } from "@/context/CartContext";

@@ -1,9 +1,9 @@
 {
   "project": "RYLIXS",
-  "developmentStatus": "in_progress_screen_by_screen_review",
+  "developmentStatus": "local_redesign_ready_for_owner_review",
   "businessLaunchStatus": "awaiting_owner_configuration",
-  "backendTestsPassed": 21,
-  "apiChecksPassed": 48,
+  "backendTestsPassed": 41,
+  "apiChecksPassed": 58,
   "lint": "passed",
   "localUrl": "http://127.0.0.1:3100",
   "requiredBusinessInputs": [
@@ -12,7 +12,7 @@
     "production HTTPS hosting"
   ],
   "report": "IMPLEMENTATION_REPORT.md",
-  "productionBuild": "passed",
+  "productionBuild": "passed_local_build_directory",
   "responsiveWidths": [
     360,
     390,
@@ -23,8 +23,8 @@
     1440,
     1920
   ],
-  "currentScreen": "cart",
-  "apkDelivery": "local_preview_apk_built_and_signature_verified",
+  "currentScreen": "full_storefront_review",
+  "apkDelivery": "signed_verified_online_deployment_pending",
   "splashScreenStatus": "completed_and_opened_in_mobile_preview",
   "splashPreviewUrl": "http://127.0.0.1:3100/splash",
   "homeScreenStatus": "completed_with_sample_images_admin_editable_banners",
@@ -34,5 +34,34 @@
   "filterScreenStatus": "completed_replaced_old_panel_and_verified",
   "shopScreenStatus": "banner_added_and_toolbar_simplified",
   "cartScreenStatus": "completed_desktop_and_mobile_verified",
-  "bannerManagementStatus": "image_upload_replace_delete_for_all_placements; no_storefront_text_overlay; responsive_uncropped_images; build_and_lint_passed"
+  "bannerManagementStatus": "image_upload_replace_delete_for_all_placements; no_storefront_text_overlay; responsive_uncropped_images; build_and_lint_passed",
+  "cloudUrl": "https://rylixs.onrender.com",
+  "renderServiceId": "srv-dbcq4b1srm7s73bl98ug",
+  "renderProjectId": "prj-dbcpuoqvcj2c73ffqnq0",
+  "customDomainStatus": "DNS records saved at GoDaddy; Render domains verified; HTTPS certificate pending",
+  "sharedBackendStatus": "Website and APK share Render service, admin and resettable SQLite database",
+  "latestCloudCommit": "fd8bbb6",
+  "localBuildDirectory": ".next-local",
+  "latestLocalReview": "2026-10-23",
+  "localRedesign": {
+    "home": "reference-inspired simplified layout; removed benefits and preview footer",
+    "navigation": "shared brand, notifications, bag, menu and five-tab bottom bar",
+    "orders": "customer orders and status tracking; sample-order toggle removed",
+    "profile": "reference-inspired account card, optional uploaded photo, editable details and addresses; no payment section",
+    "product": "gallery, feature icons, stacked purchase actions, details and reviews",
+    "checkout": "guest bag preserved; sign-in return path and labelled icon fields",
+    "story": "animated brand display and editable editorial text",
+    "contact": "direct WhatsApp conversation",
+    "lookbook": "admin-controlled editions, images, publication and launch countdowns",
+    "offers": "dedicated offers page",
+    "admin": "page-banner placements, lookbook editor and story/contact/lookbook copy"
+  },
+  "responsiveReviewWidths": [
+    390,
+    1440
+  ],
+  "googleSigninStatus": "real_credentials_and_live_validation_deferred_by_owner",
+  "deploymentStatus": "owner_authorized_online_release_in_progress",
+  "apkVersion": "1.2.0",
+  "apkSha256": "c2fd0d6ce5fd842524a3537564342a68f02430f0efe2ad80589df804a7f5f61c"
 }

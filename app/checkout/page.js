@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import {User,Phone,Mail,MapPin,House,PackageCheck,ShieldCheck} from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { api, useStore, price, Empty } from "@/components/StoreShell";
 export const addressFields = [
@@ -18,7 +19,7 @@ export function AddressForm({ value, onChange }) {
     <div className="form-grid">
       {addressFields.map((k) => (
         <label key={k}>
-          {k === "house"
+          <MapPin size={16} aria-hidden="true"/> {k === "house"
             ? "House / door number"
             : k.charAt(0).toUpperCase() + k.slice(1)}
           {k !== "landmark" ? " *" : " (optional)"}
@@ -135,9 +136,9 @@ export default function Checkout() {
   if (!user)
     return (
       <section className="store-section narrow">
-        <h1>Your order, in one place.</h1>
+        <ShieldCheck size={36}/><h1>Sign in to continue your order</h1>
         <p>
-          Sign in to securely save your delivery details and follow your orders.
+          Your bag is saved. Sign in to add your delivery details, place your order and track its progress.
         </p>
         <Link className="button" href="/login?next=/checkout">
           Sign in to order
@@ -148,7 +149,7 @@ export default function Checkout() {
   return (
     <section className="store-section">
       <p className="eyebrow">BAG / DETAILS / {quote ? "REVIEW" : "DELIVERY"}</p>
-      <h1>{quote ? "A final look." : "Make it yours."}</h1>
+      <h1>{quote ? "Review your order" : "Delivery details"}</h1><p>Complete your details below. You can review everything before placing your order.</p>
       {error && (
         <p role="alert" className="error">
           {error}
@@ -163,7 +164,7 @@ export default function Checkout() {
       <div className="checkout-layout">
         {!quote ? (
           <form onSubmit={review} className="panel">
-            <h2>Your details</h2>
+            <h2><User size={23}/> Contact details</h2>
             <div className="form-grid">
               {[
                 ["customerName", "Full name", "text"],
@@ -171,7 +172,7 @@ export default function Checkout() {
                 ["email", "Email (optional)", "email"],
               ].map(([k, l, t]) => (
                 <label key={k}>
-                  {l}
+                  {k === "phone" ? <Phone size={17}/> : k === "email" ? <Mail size={17}/> : <User size={17}/>} {l}
                   {k !== "email" ? " *" : ""}
                   <input
                     type={t}
@@ -184,7 +185,7 @@ export default function Checkout() {
                 </label>
               ))}
             </div>
-            <h2>Delivery address</h2>
+            <h2><House size={23}/> Delivery address</h2>
             {user.addresses.length > 0 && (
               <label>
                 Saved address
@@ -193,7 +194,7 @@ export default function Checkout() {
                     setForm({
                       ...form,
                       deliveryAddress:
-                        user.addresses[Number(e.target.value)] || {},
+                        e.target.value === "" ? {} : user.addresses[Number(e.target.value)] || {},
                     })
                   }
                 >

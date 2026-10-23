@@ -1,115 +1,19 @@
 "use client";
-import { useState, useEffect } from "react";
+import {useState,useEffect} from "react";
 import Link from "next/link";
-import { api, useStore } from "@/components/StoreShell";
-import { AddressForm } from "@/app/checkout/page";
-export default function Account() {
-  const { user, setUser } = useStore(),
-    [form, setForm] = useState(null),
-    [message, setMessage] = useState(""),
-    [busy, setBusy] = useState(false);
-  useEffect(() => {
-    if (user) setForm({ ...user });
-  }, [user]);
-  if (!user || !form)
-    return (
-      <section className="store-section narrow">
-        <h1>Your personal edit.</h1>
-        <Link className="button" href="/login?next=/account">
-          Sign in
-        </Link>
-      </section>
-    );
-  async function save(e) {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      const d = await api("profile", "PUT", form);
-      setUser(d.user);
-      setMessage("Profile saved.");
-    } catch (e) {
-      setMessage(e.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <section className="store-section narrow">
-      <p className="eyebrow">YOUR ACCOUNT</p>
-      <h1>Hello, {user.name}.</h1>
-      <div className="actions">
-        <Link href="/orders">Your orders ↗</Link>
-        <Link href="/wishlist">Your wishlist ↗</Link>
-        <button
-          onClick={async () => {
-            await api("auth/logout", "POST", {});
-            setUser(null);
-          }}
-        >
-          Sign out
-        </button>
-      </div>
-      <form onSubmit={save}>
-        <h2>Profile</h2>
-        <label>
-          Name
-          <input
-            required
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-        </label>
-        <label>
-          Mobile
-          <input
-            pattern="[6-9][0-9]{9}"
-            maxLength="10"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          />
-        </label>
-        <p>Email: {user.email}</p>
-        <h2>Saved addresses</h2>
-        {form.addresses.map((a, i) => (
-          <div className="panel" key={i}>
-            <AddressForm
-              value={a}
-              onChange={(value) =>
-                setForm({
-                  ...form,
-                  addresses: form.addresses.map((x, j) =>
-                    j === i ? value : x,
-                  ),
-                })
-              }
-            />
-            <button
-              type="button"
-              onClick={() =>
-                setForm({
-                  ...form,
-                  addresses: form.addresses.filter((_, j) => i !== j),
-                })
-              }
-            >
-              Remove address
-            </button>
-          </div>
-        ))}
-        <button
-          type="button"
-          disabled={form.addresses.length >= 10}
-          onClick={() =>
-            setForm({ ...form, addresses: [...form.addresses, {}] })
-          }
-        >
-          + Add address
-        </button>
-        <p role="status">{message}</p>
-        <button disabled={busy} className="button">
-          {busy ? "Saving…" : "Save profile"}
-        </button>
-      </form>
-    </section>
-  );
+import {User,Phone,Calendar,Heart,Package,MapPin,Bell,Settings,LogOut,ChevronRight,Pencil,Camera} from "lucide-react";
+import {api,useStore,Photo} from "@/components/StoreShell";
+import PageBanner from "@/components/PageBanner";
+import {AddressForm} from "@/app/checkout/page";
+export default function Account(){
+ const {user,setUser}=useStore(); const [form,setForm]=useState(null),[editing,setEditing]=useState(false),[message,setMessage]=useState(""),[busy,setBusy]=useState(false);
+ useEffect(()=>{if(user)setForm({...user,addresses:user.addresses||[]});},[user]);
+ useEffect(()=>{if(window.location.hash)setEditing(true);},[]);
+ async function save(e){e.preventDefault();setBusy(true);setMessage("");try{const d=await api("profile","PUT",form);setUser(d.user);setEditing(false);setMessage("Your profile has been saved.");}catch(e){setMessage(e.message);}finally{setBusy(false);}}
+ async function photo(file){if(!file)return;setBusy(true);setMessage("");try{if(file.size>5*1024*1024)throw new Error("Choose a photo smaller than 5 MB.");const body=new FormData();body.append("file",file);const r=await fetch("/api/profile/photo",{method:"POST",body});const d=await r.json();if(!r.ok)throw new Error(d.error);setForm(f=>({...f,avatar:d.url}));setMessage("Photo ready. Save your profile to apply it.");}catch(e){setMessage(e.message);}finally{setBusy(false);}}
+ if(!user||!form)return <section className="store-section narrow signin-prompt"><User size={40}/><h1>Your RYLIXS profile</h1><p>Sign in to view your profile, save delivery addresses and follow your orders.</p><Link className="button" href="/login?next=/account">Sign in to continue</Link></section>;
+ return <section className="profile-page"><PageBanner placement="Profile"/><div className="profile-card"><div className="profile-identity">{user.avatar?<Photo className="profile-avatar" src={user.avatar} alt="Your profile photo"/>:<span className="profile-avatar avatar-placeholder"><User size={40}/></span>}<div><h1>{user.name}</h1><p>{user.email}</p><span className="member-badge">Member</span></div><button className="button profile-edit" onClick={()=>setEditing(!editing)}><Pencil size={16}/>Edit</button></div><div className="profile-facts">{[[Phone,"Phone",user.phone||"Add your number"],[Calendar,"Date of birth",user.dob||"Not added"],[User,"Gender",user.gender||"Not added"]].map(([Icon,label,value])=><div key={label}><Icon size={22}/><span><small>{label}</small><strong>{value}</strong></span></div>)}</div></div>
+ {message&&<p className="panel" role="status">{message}</p>}
+ {editing&&<form className="panel profile-editor" onSubmit={save}><h2>Edit your profile</h2><p>Your photo, date of birth and gender are optional.</p><div className="photo-editor">{form.avatar&&<Photo className="profile-avatar" src={form.avatar} alt="New profile photo"/>}<label><Camera size={18}/>Profile photo<input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>photo(e.target.files[0])}/></label>{form.avatar&&<button type="button" onClick={()=>setForm({...form,avatar:""})}>Remove photo</button>}</div><div className="form-grid"><label>Name<input required maxLength={100} value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label>Phone<input type="tel" pattern="[6-9][0-9]{9}" maxLength={10} value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/></label><label>Date of birth<input type="date" max={new Date().toISOString().slice(0,10)} value={form.dob||""} onChange={e=>setForm({...form,dob:e.target.value})}/></label><label>Gender<select value={form.gender||""} onChange={e=>setForm({...form,gender:e.target.value})}>{["","Female","Male","Non-binary","Prefer not to say"].map(g=><option key={g} value={g}>{g||"Choose (optional)"}</option>)}</select></label></div><h2 id="addresses">Saved addresses</h2>{form.addresses.map((a,i)=><div className="panel" key={i}><AddressForm value={a} onChange={v=>setForm({...form,addresses:form.addresses.map((x,j)=>i===j?v:x)})}/><button type="button" onClick={()=>setForm({...form,addresses:form.addresses.filter((_,j)=>i!==j)})}>Remove address</button></div>)}<button type="button" disabled={form.addresses.length>=10} onClick={()=>setForm({...form,addresses:[...form.addresses,{}]})}>+ Add address</button><div className="actions"><button className="button" disabled={busy}>{busy?"Saving…":"Save profile"}</button><button type="button" onClick={()=>{setForm({...user});setEditing(false);}}>Cancel</button></div></form>}
+ <nav className="profile-links" aria-label="Account options">{[[User,"Profile","edit"],[Package,"My Orders","/orders"],[Heart,"Wishlist","/wishlist"],[MapPin,"Addresses","addresses"],[Bell,"Notifications","/notifications"],[Settings,"Settings","edit"]].map(([Icon,label,url])=>url.startsWith("/")?<Link key={label} href={url}><Icon/><strong>{label}</strong><ChevronRight/></Link>:<button key={label} onClick={()=>{setEditing(true);if(url==="addresses")setTimeout(()=>document.getElementById("addresses")?.scrollIntoView({behavior:"smooth"}),100);}}><Icon/><strong>{label}</strong><ChevronRight/></button>)}<button onClick={async()=>{try{await api("auth/logout","POST",{});setUser(null);setForm(null);}catch(e){setMessage(e.message);}}}><LogOut/><strong>Logout</strong><ChevronRight/></button></nav></section>;
 }

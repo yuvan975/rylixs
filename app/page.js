@@ -52,10 +52,7 @@ export default function HomePage() {
   const sold = products
     .filter((p) => p.unitsSold > 0)
     .sort((a, b) => b.unitsSold - a.unitsSold);
-  const picks = (sold.length ? sold : products.filter((p) => p.featured)).slice(
-    0,
-    4,
-  );
+  const picks = [...products.filter(p=>p.newArrival), ...products.filter(p=>!p.newArrival)].slice(0, 6);
   useEffect(() => {
     if (!user) {
       setNotifications(0);
@@ -68,25 +65,7 @@ export default function HomePage() {
   }, [user]);
   return (
     <div className="rylixs-home">
-      <BrandSplash />
-      <header className="rh-header">
-        <Link href="/" className="rh-brand">
-          <img src="/logo-icon.png" alt="" />
-          <span>
-            RYLIXS<small>Wear Your Style</small>
-          </span>
-        </Link>
-        <div className="rh-header-actions">
-          <Link href="/notifications" aria-label="Notifications">
-            <Bell />
-            {notifications > 0 && <sup>{notifications}</sup>}
-          </Link>
-          <Link href="/cart" aria-label={`Shopping bag, ${count} items`}>
-            <ShoppingBag />
-            {count > 0 && <sup>{count}</sup>}
-          </Link>
-        </div>
-      </header>
+
       <main className="rh-main">
         <form className="rh-search" action="/shop">
           <Search size={21} />
@@ -134,18 +113,10 @@ export default function HomePage() {
             <span>All</span>
           </Link>
         </nav>
-        {promos.length > 0 && (
-          <section className="rh-promos" aria-label="Featured collections">
-            {promos.map((b) => (
-              <Banner key={b.id} banner={b} />
-            ))}
-          </section>
-        )}
         <section className="rh-products">
           <div className="rh-section-heading">
             <h2>
-              <Crown />
-              {sold.length || preview ? "Best Sellers" : "Our Favourites"}
+              New Arrivals
             </h2>
             <Link href="/shop">
               View All <ArrowRight size={15} />
@@ -222,58 +193,7 @@ export default function HomePage() {
             </p>
           )}
         </section>
-        <section className="rh-benefits" aria-label="Shopping information">
-          {[
-            [
-              Truck,
-              "Free Shipping",
-              settings.freeDeliveryAbove > 0
-                ? "On orders over " + price(settings.freeDeliveryAbove)
-                : "View delivery at checkout",
-            ],
-            [ShieldCheck, "Secure Account", "Your details stay protected"],
-            [RotateCcw, "Returns", "Contact us for eligibility"],
-            [Headphones, "Here to Help", "We’re here to help"],
-          ].map(([Icon, title, desc]) => (
-            <Link href="/contact" key={title}>
-              <Icon />
-              <div>
-                <strong>{title}</strong>
-                <small>{desc}</small>
-              </div>
-            </Link>
-          ))}
-        </section>
-        <footer className="rh-footer">
-          {preview && (
-            <span>Preview collection · Illustrative photography</span>
-          )}
-          <Link href="/admin/banners">Manage store</Link>
-        </footer>
       </main>
-      <nav className="rh-bottom" aria-label="Main navigation">
-        {[
-          [Home, "Home", "/"],
-          [Search, "Shop", "/shop"],
-          [Heart, "Wishlist", "/wishlist"],
-          [ShoppingBag, "Orders", "/orders"],
-          [User, "Profile", "/account"],
-        ].map(([Icon, title, href]) => (
-          <Link
-            key={title}
-            href={href}
-            aria-current={href === "/" ? "page" : undefined}
-          >
-            <span>
-              <Icon fill={title === "Home" ? "currentColor" : "none"} />
-              {title === "Wishlist" && ids.length > 0 && (
-                <sup>{ids.length}</sup>
-              )}
-            </span>
-            {title}
-          </Link>
-        ))}
-      </nav>
     </div>
   );
 }

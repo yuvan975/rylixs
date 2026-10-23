@@ -1,19 +1,6 @@
+"use client";
 import Link from "next/link";
-export default function About() {
-  return (
-    <section className="store-section narrow">
-      <p className="eyebrow">THE RYLIXS POINT OF VIEW</p>
-      <h1>Wear your style.</h1>
-      <p className="intro">
-        A wardrobe is personal. We believe choosing it should be, too.
-      </p>
-      <p>
-        Explore the RYLIXS collection, find your fit and connect with our team
-        on WhatsApp to confirm your order.
-      </p>
-      <Link className="button" href="/shop">
-        Discover the collection ↗
-      </Link>
-    </section>
-  );
-}
+import {ArrowUpRight,MoveUpRight,Sparkles,Heart} from "lucide-react";
+import {useStore} from "@/components/StoreShell";
+import PageBanner from "@/components/PageBanner";
+export default function About(){const {settings}=useStore();return <section className="story-page"><div className="story-hero"><p className="eyebrow">OUR STORY / RYLIXS</p><h1>{settings.storyTitle||"Your style.\nYour own story."}</h1><p>{settings.storyText||"A wardrobe is personal. It’s how you show up, express yourself and make the everyday your own. RYLIXS is a space to find the pieces that feel like you."}</p><Link className="button" href="/shop">Find your next favourite <ArrowUpRight size={18}/></Link><span className="story-orbit" aria-hidden="true">R</span></div><PageBanner placement="Story"/><div className="story-values">{[[Sparkles,"01","Express yourself","Make room for a style that feels entirely your own."],[MoveUpRight,"02","Make it everyday","Build your wardrobe around the moments that matter to you."],[Heart,"03","Keep it personal","Need a hand finding your fit? Start a conversation with our team."]].map(([Icon,n,title,text])=><article key={n}><span>{n}<Icon/></span><h2>{title}</h2><p>{text}</p></article>)}</div><div className="story-end"><p>RYLIXS</p><h2>Wear your style.</h2><Link href="/lookbook">See what’s next ↗</Link></div></section>;}

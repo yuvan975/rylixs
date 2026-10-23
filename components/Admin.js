@@ -19,11 +19,11 @@ import { api, price, Photo, Skeleton, useStore } from "./StoreShell";
 const sections = [
  ["dashboard","Overview",LayoutDashboard],["orders","Manage Orders",Package],
  ["products","Products",Shirt],["categories","Categories",Layers],["inventory","Inventory & Stock",Boxes],
- ["home-banners","Home Banners",PanelsTopLeft],["shop-banners","Shop Banners",PanelsTopLeft],["category-banners","Category Banners",PanelsTopLeft],
+ ["page-banners","Page Banners",PanelsTopLeft],["lookbook","Lookbook launches",PanelsTopLeft],["home-banners","Home Banners",PanelsTopLeft],["shop-banners","Shop Banners",PanelsTopLeft],["category-banners","Category Banners",PanelsTopLeft],
  ["coupons","All Coupons",PanelsTopLeft],["add-coupon","Add Coupon",PanelsTopLeft],["category-coupons","Category Coupons",PanelsTopLeft],
  ["offers","Offers & Sales",PanelsTopLeft],["customers","Customers",Users],["reviews","Reviews",PanelsTopLeft],["notifications","Notifications",PanelsTopLeft],["reports","Sales Reports",PanelsTopLeft],["settings","Store Settings",Settings]
 ];
-const resourceScreens = {"home-banners":{kind:"banners",placement:"Home"},"shop-banners":{kind:"banners",placement:"Shop"},"category-banners":{kind:"banners",placement:"CategoryPage"},"category-coupons":{kind:"coupons",categoryOnly:true},"add-coupon":{kind:"coupons",createOnly:true}};
+const resourceScreens = {"page-banners":{kind:"banners"},"lookbook":{kind:"lookbook"},"home-banners":{kind:"banners",placement:"Home"},"shop-banners":{kind:"banners",placement:"Shop"},"category-banners":{kind:"banners",placement:"CategoryPage"},"category-coupons":{kind:"coupons",categoryOnly:true},"add-coupon":{kind:"coupons",createOnly:true}};
 const blankProduct = {
   name: "",
   slug: "",
@@ -1110,6 +1110,9 @@ function SettingsEditor({ settings, homepage, busy, save, upload }) {
       ]
     : [
         ["businessName", "Business name"],
+        ["storyTitle", "Our story heading"], ["storyText", "Our story text", "textarea"],
+        ["contactTitle", "Contact heading"], ["contactText", "Contact text", "textarea"],
+        ["lookbookTitle", "Lookbook heading"], ["lookbookText", "Lookbook introduction", "textarea"],
         ["whatsappNumber", "WhatsApp number (country code + digits)"],
         ["contactEmail", "Contact email"],
         ["businessAddress", "Business address", "textarea"],

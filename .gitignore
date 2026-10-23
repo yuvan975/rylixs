@@ -13,3 +13,5 @@ verification/
 
 android/build/
 dist/
+
+.next-local/

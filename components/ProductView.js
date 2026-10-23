@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Heart, Share2, Plus } from "lucide-react";
+import { Heart, Share2, Plus, Shirt, Palette, Circle, Scissors } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useStore, Photo, price, Card } from "./StoreShell";
@@ -60,21 +60,13 @@ export default function ProductView({ product: initial }) {
     if (p.colors.length && !color) return setMessage("Please choose a colour.");
     if (!v || v.stock < qty)
       return setMessage("This selection is out of stock.");
-    if (!user) {
-      sessionStorage.setItem(
-        "rylixs_pending_add",
-        JSON.stringify({ id: p.id, size, color, qty, buy }),
-      );
-      router.push("/login?next=" + encodeURIComponent("/product/" + p.slug));
-      return;
-    }
     addItem(p, { size, color, qty });
     setDrawerOpen(false);
     setMessage("Added to your cart.");
-    if (buy) router.push("/cart");
+    if (buy) router.push(user ? "/checkout" : "/login?next=/checkout");
   }
   return (
-    <section className="store-section">
+    <section className="store-section product-reference">
       <p className="breadcrumb">
         <Link href="/shop">Shop</Link> / {p.category} / {p.name}
       </p>
@@ -138,7 +130,7 @@ export default function ProductView({ product: initial }) {
               </>
             )}
           </p>
-          <p>{p.description}</p>
+          <div className="product-features">{[[Palette,p.material||"Selected fabric"],[Shirt,p.fit||"Everyday style"],[Circle,"Details & care"],[Scissors,"RYLIXS edit"]].map(([Icon,label])=><div key={label}><Icon size={22}/><span>{label}</span></div>)}</div>
           {p.colors.length > 0 && (
             <fieldset>
               <legend>Colour · {color || "Choose your shade"}</legend>
@@ -224,7 +216,7 @@ export default function ProductView({ product: initial }) {
               aria-pressed={isSaved(p.id)}
               onClick={() => toggle(p.id)}
             >
-              <Heart size={18} fill={isSaved(p.id) ? "currentColor" : "none"} />
+              <Heart size={18} fill={isSaved(p.id) ? "currentColor" : "none"} /> Wishlist
             </button>
             <button
               className="button secondary"
@@ -247,11 +239,11 @@ export default function ProductView({ product: initial }) {
                 }
               }}
             >
-              <Share2 size={18} />
+              <Share2 size={18} /> Share
             </button>
           </div>
-          <details open>
-            <summary>Details & care</summary>
+          <details>
+            <summary>Details & care</summary><p>{p.description}</p>
             {[
               ["Material", p.material],
               ["Fit", p.fit],

@@ -100,7 +100,7 @@ export default function ResourceManager({ kind, data, mutate, upload, busy, plac
       </p>
       {kind !== "reviews" && !createOnly && !edit && (
         <button className="button" onClick={start}>
-          + Create {kind.slice(0, -1)}
+          + Create {(kind === "lookbook" ? "edition" : kind.slice(0, -1))}
         </button>
       )}
       {!createOnly && !edit && <div className="resource-grid">
@@ -174,7 +174,7 @@ export default function ResourceManager({ kind, data, mutate, upload, busy, plac
         >
           <div className="section-heading">
             <h2>
-              {edit.id ? "Edit" : "Create"} {kind.slice(0, -1)}
+              {edit.id ? "Edit" : "Create"} {(kind === "lookbook" ? "edition" : kind.slice(0, -1))}
             </h2>
             <button type="button" onClick={() => setEdit(createOnly ? {...initial} : null)}>
               Close
@@ -288,6 +288,12 @@ export default function ResourceManager({ kind, data, mutate, upload, busy, plac
               </p>
             </>
           )}
+          {kind === "lookbook" && <>
+            <label>Edition image<input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>upload(e.target.files[0],url=>setEdit({...edit,image:url}))}/></label>
+            {edit.image && <Photo className="banner-preview" src={edit.image} alt="Edition preview"/>}
+            {field("launchAt", "Launch date and time (UTC)", "datetime-local")}
+            {field("order", "Display order", "number")}
+          </>}
           {kind === "notifications" &&
             field("type", "Notification type", "text", [
               "General",

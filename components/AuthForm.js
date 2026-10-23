@@ -47,7 +47,7 @@ export default function AuthForm({ admin = false }) {
       <p className="eyebrow">
         {admin ? "PRIVATE / STORE MANAGEMENT" : "YOUR PERSONAL EDIT"}
       </p>
-      <h1>{admin ? "Store sign in." : "Your style. Your space."}</h1>
+      <h1>{admin ? "Store sign in." : next === "/checkout" ? "Sign in to continue your order" : "Welcome to RYLIXS"}</h1>
       {admin ? (
         <form onSubmit={submit}>
           <label>
@@ -82,10 +82,7 @@ export default function AuthForm({ admin = false }) {
               G · Continue with Google
             </a>
           ) : (
-            <p className="panel">
-              Google sign-in will be enabled when the store’s Google credentials
-              are configured.
-            </p>
+            <div className="panel"><button className="button google-button" disabled>G · Continue with Google</button><p>Google sign-in is coming soon. For this local preview, use the preview customer option below.</p></div>
           )}
           {options.preview && (
             <form onSubmit={(e) => submit(e, true)} className="panel">
