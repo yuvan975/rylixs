@@ -1,6 +1,6 @@
 import * as commerce from "@/lib/commerce.mjs";
 
-import { startOAuth, finishOAuth, previewUser } from "@/lib/google-auth.mjs";
+import { startOAuth, finishOAuth, previewUser, issueAppGrant, redeemAppGrant } from "@/lib/google-auth.mjs";
 
 import { NextResponse } from "next/server";
 
@@ -123,8 +123,8 @@ async function handler(req, { params }) {
       process.env.NODE_ENV === "production" &&
       process.env.RYLIXS_INSECURE_LOCAL_HTTP !== "true";
 
-    const sessionResponse = (u) => {
-      const res = response({ user: u });
+    const sessionResponse = (u, next) => {
+      const res = response({ user: u, next });
       res.cookies.set("rylixs_session", store.createSession(u.id), {
         httpOnly: true,
         sameSite: "lax",
@@ -140,7 +140,7 @@ async function handler(req, { params }) {
         google: !!(
           process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
         ),
-        preview: process.env.RYLIXS_PUBLIC_DEMO === "true" || (
+        preview: (
           process.env.RYLIXS_LOCAL_PREVIEW === "true" &&
           process.env.RYLIXS_INSECURE_LOCAL_HTTP === "true"),
       });
@@ -148,8 +148,17 @@ async function handler(req, { params }) {
     if (route === "auth/preview" && method === "POST")
       return sessionResponse(previewUser());
 
+    if (route === "auth/google/app" && method === "POST") {
+      const input = JSON.parse((await readLimited(req, 1024)).toString());
+      const auth = redeemAppGrant(input.verifier);
+      return sessionResponse(auth.user, auth.next);
+    }
+
     if (route === "auth/google" && method === "GET") {
-      const auth = startOAuth(new URL(req.url).searchParams.get("next"));
+      const query = new URL(req.url).searchParams;
+      const host = req.headers.get("x-forwarded-host") || req.headers.get("host");
+      const origin = host ? (secureCookie ? "https://" : "http://") + host : new URL(req.url).origin;
+      const auth = startOAuth(query.get("next"), query.get("app_challenge"), origin);
       const res = NextResponse.redirect(auth.url);
       res.cookies.set("rylixs_oauth", auth.state, {
         httpOnly: true,
@@ -163,13 +172,27 @@ async function handler(req, { params }) {
 
     if (route === "auth/google/callback" && method === "GET") {
       const q = new URL(req.url).searchParams;
-      const auth = await finishOAuth(
-        q.get("state"),
-        q.get("code"),
-        (await cookies()).get("rylixs_oauth")?.value,
-      );
+      let auth;
+      try {
+        auth = await finishOAuth(
+          q.get("state"),
+          q.get("code"),
+          (await cookies()).get("rylixs_oauth")?.value,
+        );
+      } catch {
+        const target = new URL("/login?signin=retry", process.env.RYLIXS_SITE_URL || req.url);
+        const res = NextResponse.redirect(target);
+        res.cookies.set("rylixs_oauth", "", { path: "/", maxAge: 0 });
+        return res;
+      }
+      if (auth.appChallenge) {
+        issueAppGrant(auth);
+        const res = NextResponse.redirect(new URL("/signin-complete", auth.origin));
+        res.cookies.set("rylixs_oauth", "", { path: "/", maxAge: 0 });
+        return res;
+      }
       const res = NextResponse.redirect(
-        new URL(auth.next, process.env.RYLIXS_SITE_URL || req.url),
+        new URL(auth.next, auth.origin),
       );
       res.cookies.set("rylixs_session", store.createSession(auth.user.id), {
         httpOnly: true,
@@ -199,7 +222,7 @@ async function handler(req, { params }) {
 
         categories: store.categories(),
 
-        preview: process.env.RYLIXS_LOCAL_PREVIEW === "true" || process.env.RYLIXS_PUBLIC_DEMO === "true",
+        preview: process.env.RYLIXS_LOCAL_PREVIEW === "true" && process.env.RYLIXS_INSECURE_LOCAL_HTTP === "true",
         settings: store.settings(),
       });
 

@@ -48,6 +48,7 @@ export default function AuthForm({ admin = false }) {
         {admin ? "PRIVATE / STORE MANAGEMENT" : "YOUR PERSONAL EDIT"}
       </p>
       <h1>{admin ? "Store sign in." : next === "/checkout" ? "Sign in to continue your order" : "Welcome to RYLIXS"}</h1>
+      {!admin && params.get("signin") === "retry" && <p role="alert">Sign-in was cancelled or could not be completed. Please try again with your Google account.</p>}
       {admin ? (
         <form onSubmit={submit}>
           <label>
@@ -82,7 +83,7 @@ export default function AuthForm({ admin = false }) {
               G · Continue with Google
             </a>
           ) : (
-            <div className="panel"><button className="button google-button" disabled>G · Continue with Google</button><p>Google sign-in is coming soon. For this local preview, use the preview customer option below.</p></div>
+            <div className="panel"><button className="button google-button" disabled>G · Continue with Google</button><p>Google sign-in is temporarily unavailable. Please try again later.</p></div>
           )}
           {options.preview && (
             <form onSubmit={(e) => submit(e, true)} className="panel">
@@ -97,6 +98,7 @@ export default function AuthForm({ admin = false }) {
             </form>
           )}
           <Link href="/shop">Continue browsing →</Link>
+          <p><Link href="/privacy">Privacy policy</Link></p>
         </>
       )}
       {error && (

@@ -8,14 +8,10 @@ process.env.RYLIXS_DB_PATH=path.join(dir,'test.sqlite');
 delete process.env.RYLIXS_LOCAL_PREVIEW;
 delete process.env.RYLIXS_INSECURE_LOCAL_HTTP;
 const {previewUser}=await import('../lib/google-auth.mjs');
-const {db,createSession,sessionUser}=await import('../lib/store.mjs');
-test('cloud test sessions are isolated customers without disabling HTTPS security',()=>{
+const {db}=await import('../lib/store.mjs');
+test('public hosting cannot create test customer sessions',()=>{
  process.env.RYLIXS_PUBLIC_DEMO='true';
- const first=previewUser(),second=previewUser();
- assert.notEqual(first.id,second.id);
- assert.equal(first.role,'customer');
- assert.equal(second.role,'customer');
- assert.equal(sessionUser(createSession(first.id)).id,first.id);
+ assert.throws(()=>previewUser(),/disabled/);
  assert.equal(process.env.RYLIXS_INSECURE_LOCAL_HTTP,undefined);
 });
 test('preview login remains disabled without an explicit testing flag',()=>{
